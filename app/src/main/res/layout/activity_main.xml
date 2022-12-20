@@ -29,6 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_margin="16dp"
             android:src="@drawable/ic_add_todo"
+            android:tint="@color/white"
             android:onClick="@{()->viewModel.addNewTodo()}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

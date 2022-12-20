@@ -24,4 +24,5 @@ class TodoAdapter(private val dataSet: List<Todo>): RecyclerView.Adapter<TodoAda
     }
 
     override fun getItemCount(): Int = dataSet.size
+
 }
