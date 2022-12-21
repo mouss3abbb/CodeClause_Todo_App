@@ -2,6 +2,7 @@ package com.example.codeclause_todo_app
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
                         db.deleteTodo(todo.title, todo.body)
                     }
                 }
+                Toast.makeText(applicationContext,"Deleted todo",Toast.LENGTH_SHORT).show()
             }
         }).attachToRecyclerView(binding.todoRv)
 
