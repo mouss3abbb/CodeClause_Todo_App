@@ -1,14 +1,21 @@
 package com.example.codeclause_todo_app
 
+import android.graphics.Canvas
+import android.icu.util.Measure
+import android.icu.util.MeasureUnit
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.codeclause_todo_app.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -42,7 +49,34 @@ class MainActivity : AppCompatActivity() {
                         db.deleteTodo(todo.title, todo.body)
                     }
                 }
-                Toast.makeText(applicationContext,"Deleted todo",Toast.LENGTH_SHORT).show()
+                Snackbar.make(todoRv,"Todo deleted",Snackbar.LENGTH_SHORT)
+                    .setAction("Undo") {
+                        val adapter: MutableList<Todo>
+                        if (todo != null) {
+                            runBlocking{
+                                db.addTodo(todo)
+                                adapter = db.showAllTodos()
+                            }
+                            binding.todoRv.adapter = TodoAdapter(adapter)
+                        }
+                    }.show()
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
+                    .addBackgroundColor(resources.getColor(R.color.color1))
+                    .addActionIcon(R.drawable.ic_delete)
+                    .create()
+                    .decorate()
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }).attachToRecyclerView(binding.todoRv)
 
