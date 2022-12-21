@@ -5,9 +5,12 @@ import android.icu.util.Measure
 import android.icu.util.MeasureUnit
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.todoListLiveData.observe(this){
             binding.todoRv.adapter = TodoAdapter(it)
         }
+
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT){
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -49,15 +53,14 @@ class MainActivity : AppCompatActivity() {
                         db.deleteTodo(todo.title, todo.body)
                     }
                 }
-                Snackbar.make(todoRv,"Todo deleted",Snackbar.LENGTH_SHORT)
+                Snackbar.make(todoRv,"Todo deleted",Snackbar.LENGTH_LONG)
                     .setAction("Undo") {
-                        val adapter: MutableList<Todo>
                         if (todo != null) {
                             runBlocking{
                                 db.addTodo(todo)
-                                adapter = db.showAllTodos()
+                                viewModel.todoListLiveData.value = db.showAllTodos().reversed() as MutableList<Todo>
                             }
-                            binding.todoRv.adapter = TodoAdapter(adapter)
+                            binding.todoRv.adapter?.notifyDataSetChanged()
                         }
                     }.show()
             }
